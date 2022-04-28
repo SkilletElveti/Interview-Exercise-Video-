@@ -2,6 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App needs Microphone</string>
+	<key>NSCameraUsageDescription</key>
+	<string>App Needs Camera</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App Needs Loaction</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App Needs Loaction</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>App Needs Loaction</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
