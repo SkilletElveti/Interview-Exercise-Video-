@@ -37,14 +37,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         showSourceDialog()
         pickerObj.isVideo(self.videoSwitch.isOn)
         setUpGoogleMaps()
-       
-        
         //Make sure to set the delegate, to get the call back when the user taps Allow option
         if !isAuthorized {
             locationManager = CLLocationManager()
             locationManager.delegate = self
-           
-            //locationManager.requestWhenInUseAuthorization()
         }
         
     }
@@ -154,10 +150,10 @@ extension ViewController: CommDelegate {
                 if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
                         //Applying the data to UIImageView
-                        let imageView = UIImageView(image: image)
-                        imageView.frame = (self?.conatinerView.bounds)!
-                        self?.conatinerView.addSubview(imageView)
-                        self?.conatinerView.bringSubviewToFront(imageView)
+                        self?.imageView = UIImageView(image: image)
+                        self?.imageView?.frame = (self?.conatinerView.bounds)!
+                        self?.conatinerView.addSubview(self?.imageView ?? UIImageView())
+                        self?.conatinerView.bringSubviewToFront(self?.imageView ?? UIImageView())
                     }
                 }
             }
