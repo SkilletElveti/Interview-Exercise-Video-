@@ -22,6 +22,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     var mapView:GMSMapView?
     var locationManager = CLLocationManager()
     var imageView : UIImageView?
+    var isAuthorized: Bool = false
     @IBOutlet weak var gmsMap: GMSMapView!
     @IBOutlet weak var conatinerView: UIView!
     @IBOutlet weak var videoSwitch: UISwitch!
@@ -36,10 +37,16 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         showSourceDialog()
         pickerObj.isVideo(self.videoSwitch.isOn)
         setUpGoogleMaps()
-        locationManager = CLLocationManager()
+       
         
         //Make sure to set the delegate, to get the call back when the user taps Allow option
-        locationManager.delegate = self
+        if !isAuthorized {
+            locationManager = CLLocationManager()
+            locationManager.delegate = self
+           
+            //locationManager.requestWhenInUseAuthorization()
+        }
+        
     }
     
     //Switching logic for image or video
@@ -82,13 +89,25 @@ extension ViewController: CommDelegate {
     }
     
     //Picked up image
-    func didPickUpAImages(_ url: NSURL?) {
+    func didPickUpAImages(_ url: Any?) {
         if let _ = url {
-            setUpFlag()
-            self.videoName = url!.relativeString
-            removePreviousPlayer()
-            self.videoUrl = nil
-            addImage(url!)
+            if url is NSURL {
+                var url = url as! NSURL
+                DispatchQueue.main.asyncAfter(deadline:( .now() + 3.0), execute: {
+                    [weak self] in
+                    self?.setUpFlag()
+                    self?.videoName = url.relativeString
+                    self?.removePreviousPlayer()
+                    self?.videoUrl = nil
+                    self?.addImage(url)
+                })
+            } else if url is UIImage {
+                self.setUpFlag()
+                self.videoName = "Img"
+                self.removePreviousPlayer()
+                self.videoUrl = nil
+                setImg(url as! UIImage)
+            }
         }
     }
     
@@ -129,7 +148,6 @@ extension ViewController: CommDelegate {
     }
     
     private func addImage(_ url: NSURL) {
-        
         DispatchQueue.global().async { [weak self] in
             //Extracting image data from the URL
             if let data = try? Data(contentsOf: url.absoluteURL!) {
@@ -144,7 +162,13 @@ extension ViewController: CommDelegate {
                 }
             }
         }
-        
+    }
+    
+    private func setImg(_ img: UIImage) {
+        let imageView = UIImageView(image: img)
+        imageView.frame = (self.conatinerView.bounds)
+        self.conatinerView.addSubview(imageView)
+        self.conatinerView.bringSubviewToFront(imageView)
     }
    
 }
@@ -175,20 +199,24 @@ extension ViewController: CLLocationManagerDelegate {
                 {
                 case .authorizedAlways, .authorizedWhenInUse:
                     print("Authorize.")
+                    isAuthorized = true
                     locationManager.desiredAccuracy = kCLLocationAccuracyBest
                     locationManager.startUpdatingLocation()
                     locationManager.startMonitoringSignificantLocationChanges()
                     break
                 case .notDetermined:
                     print("Not determined.")
+                    isAuthorized = false
                     locationManager.requestWhenInUseAuthorization()
                     break
                 case .restricted:
                     print("Restricted.")
+                    isAuthorized = false
                     locationManager.requestWhenInUseAuthorization()
                     break
                 case .denied:
                     print("Denied.")
+                    isAuthorized = false
                     locationManager.requestWhenInUseAuthorization()
                 }
             }

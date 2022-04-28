@@ -92,8 +92,15 @@ extension VideoPickup: UIImagePickerControllerDelegate, UINavigationControllerDe
             let url = info[UIImagePickerController.InfoKey.mediaURL] as! NSURL?
             listener?.didPickupAVideo(url)
         } else {
-            let url = info[UIImagePickerController.InfoKey.imageURL] as! NSURL?
-            listener?.didPickUpAImages(url)
+            var data: Any?
+            //if picked from photo lib
+            if let url = info[UIImagePickerController.InfoKey.imageURL] as! NSURL? {
+                listener?.didPickUpAImages(url)
+            }
+            //if image is captured
+            if let img = info[UIImagePickerController.InfoKey.originalImage] {
+                listener?.didPickUpAImages(img)
+            }
         }
         listener?.dismissThePicker(picker: imagePickerController)
     }
@@ -104,7 +111,7 @@ protocol CommDelegate {
     //Communication method for video
     func didPickupAVideo(_ url: NSURL?)
     //Communication method for Images
-    func didPickUpAImages(_ url: NSURL?)
+    func didPickUpAImages(_ data: Any?)
     //Start the picker
     func startThePicker(picker: UIImagePickerController?)
     //Dismiss the picker
